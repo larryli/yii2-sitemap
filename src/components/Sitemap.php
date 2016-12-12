@@ -36,6 +36,22 @@ class Sitemap extends Component
     public $urlManager = 'urlManager';
 
     /**
+     * Mobile tag
+     *
+     * ```php
+     * $this->mobile = ''; // '<mobile:mobile/>'
+     * $this->mobile = 'mobile'; // '<mobile:mobile type="mobile"/>'
+     * $this->mobile = 'pc,mobile'; // '<mobile:mobile type="pc,mobile"/>'
+     * $this->mobile = 'htmladapt'; // '<mobile:mobile type="htmladapt"/>'
+     * ```
+     *
+     * @see http://zhanzhang.baidu.com/college/courseinfo?id=267&page=2#h2_article_title4
+     *
+     * @var bool|string
+     */
+    public $mobile = false;
+
+    /**
      * List of used optional attributes.
      *
      * @var string[]
@@ -274,6 +290,26 @@ class Sitemap extends Component
     }
 
     /**
+     * Mobile tag
+     *
+     * ```php
+     * $this->mobile(); // '<mobile:mobile/>'
+     * $this->mobile('mobile'); // '<mobile:mobile type="mobile"/>'
+     * $this->mobile('pc,mobile'); // '<mobile:mobile type="pc,mobile"/>'
+     * $this->mobile('htmladapt'); // '<mobile:mobile type="htmladapt"/>'
+     * ```
+     *
+     * @see http://zhanzhang.baidu.com/college/courseinfo?id=267&page=2#h2_article_title4
+     * @param string $type
+     * @return $this
+     */
+    public function mobile($type = '')
+    {
+        $this->mobile = $type;
+        return $this;
+    }
+
+    /**
      * Add ActiveQuery from SitemapEntity model to Sitemap model.
      *
      * @param \yii\db\ActiveQuery $dataSource
@@ -413,6 +449,10 @@ class Sitemap extends Component
             ) as $attribute
         ) {
             $str .= sprintf("\t<%s>%s</%1\$s>", $attribute, call_user_func([$entity, 'getSitemap' . $attribute])) . PHP_EOL;
+        }
+
+        if ($this->mobile !== false) {
+            $str .= (empty($this->mobile) ? "\t<mobile:mobile/>" : "\t<mobile:mobile type=\"{$this->mobile}\"/>") . PHP_EOL;
         }
 
         $str .= '</url>';
